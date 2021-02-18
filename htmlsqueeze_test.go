@@ -92,15 +92,22 @@ func TestSqueezeSubTrees(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	predicates := [][]Predicate{
-		[]Predicate{TagMatcher("div"), ClassMatcher("odd")},
-		[]Predicate{TagMatcher("p"), ClassMatcher("yes")},
-	}
-	found := Squeeze(doc, predicates, ExtractChildText)
+	found := SqueezeSelector(doc, "div.odd p.yes", ExtractChildText)
 	if got := len(found); got != 4 {
 		t.Errorf("expected 4 elements, got %d", got)
 	}
 	if found[0] != "a" || found[1] != "c" || found[2] != "i" || found[3] != "k" {
 		t.Errorf("expected %v, got %v", []string{"a", "c", "i", "k"}, found)
+	}
+}
+
+func TestTagClassMatchersOf(t *testing.T) {
+	predicates := TagClassMatchersOf("div.main div p.text span.important")
+	if len(predicates) != 4 {
+		t.Errorf("expected 4 predicate lists, got %d", len(predicates))
+	}
+	if len(predicates[0]) != 2 || len(predicates[1]) != 1 ||
+		len(predicates[2]) != 2 || len(predicates[3]) != 2 {
+		t.Error("predicate sub-lists have the wrong length")
 	}
 }

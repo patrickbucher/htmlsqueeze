@@ -16,6 +16,12 @@ func Squeeze(n *html.Node, predicates [][]Predicate, extract Extractor) []string
 	return texts
 }
 
+// SqueezeSelector is a convenience interface for Squeeze, which produces the
+// predicates using the given selectors by invoking TagClassMatchersOf.
+func SqueezeSelector(n *html.Node, selectors string, extract Extractor) []string {
+	return Squeeze(n, TagClassMatchersOf(selectors), extract)
+}
+
 // Apply applies the given predicates to the given node, and returns the
 // matching nodes. If a node satisfies all the predicates of the first
 // sub-list, the remaining predicates are applied to the node's children;
