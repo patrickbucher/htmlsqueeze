@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-const dummy = `
+const loremIpsumHTML = `
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -30,7 +30,7 @@ const dummy = `
 `
 
 func TestSqueeze(t *testing.T) {
-	doc, err := html.Parse(strings.NewReader(dummy))
+	doc, err := html.Parse(strings.NewReader(loremIpsumHTML))
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +47,7 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestApply(t *testing.T) {
-	doc, err := html.Parse(strings.NewReader(dummy))
+	doc, err := html.Parse(strings.NewReader(loremIpsumHTML))
 	if err != nil {
 		t.Error(err)
 	}
@@ -55,5 +55,52 @@ func TestApply(t *testing.T) {
 	found := Apply(doc, predicates)
 	if got := len(found); got != 3 {
 		t.Errorf("expected 3 nodes, got %d", got)
+	}
+}
+
+const subTreeHTML = `
+<div class="main">
+	<div class="odd">
+		<p class="yes">a</p>
+		<p class="no">b</p>
+		<p class="yes">c</p>
+		<p class="no">d</p>
+	</div>
+	<div class="even">
+		<p class="yes">e</p>
+		<p class="no">f</p>
+		<p class="yes">g</p>
+		<p class="no">h</p>
+	</div>
+	<div class="odd">
+		<p class="yes">i</p>
+		<p class="no">j</p>
+		<p class="yes">k</p>
+		<p class="no">l</p>
+	</div>
+	<div class="even">
+		<p class="yes">m</p>
+		<p class="no">n</p>
+		<p class="yes">o</p>
+		<p class="no">p</p>
+	</div>
+</div>
+`
+
+func TestSqueezeSubTrees(t *testing.T) {
+	doc, err := html.Parse(strings.NewReader(subTreeHTML))
+	if err != nil {
+		t.Error(err)
+	}
+	predicates := [][]Predicate{
+		[]Predicate{TagMatcher("div"), ClassMatcher("odd")},
+		[]Predicate{TagMatcher("p"), ClassMatcher("yes")},
+	}
+	found := Squeeze(doc, predicates, ExtractChildText)
+	if got := len(found); got != 4 {
+		t.Errorf("expected 4 elements, got %d", got)
+	}
+	if found[0] != "a" || found[1] != "c" || found[2] != "i" || found[3] != "k" {
+		t.Errorf("expected %v, got %v", []string{"a", "c", "i", "k"}, found)
 	}
 }
