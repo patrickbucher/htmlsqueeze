@@ -4,10 +4,9 @@ import (
 	"golang.org/x/net/html"
 )
 
-type Predicate func(n *html.Node) bool
-
-type Extractor func(n *html.Node) string
-
+// Squeeze applies the given predicates to the given node, applies the given
+// extractor to the matching nodes, and returns the extracted text as a list of
+// strings.
 func Squeeze(n *html.Node, predicates [][]Predicate, extract Extractor) []string {
 	texts := make([]string, 0)
 	nodes := Apply(n, predicates)
@@ -17,6 +16,12 @@ func Squeeze(n *html.Node, predicates [][]Predicate, extract Extractor) []string
 	return texts
 }
 
+// Apply applies the given predicates to the given node, and returns the
+// matching nodes. If a node satisfies all the predicates of the first
+// sub-list, the remaining predicates are applied to the node's children;
+// otherwise all the predicates are applied to the node's children. If no more
+// predicates are left to be satisfied, the node is considered a match and
+// returned.
 func Apply(n *html.Node, predicates [][]Predicate) []*html.Node {
 	if len(predicates) == 0 {
 		return []*html.Node{n}
@@ -32,6 +37,8 @@ func Apply(n *html.Node, predicates [][]Predicate) []*html.Node {
 	return nodes
 }
 
+// MatchAll applies the given predicates to a node, returns true if the node
+// satisfies all those predicates, and false otherwise.
 func MatchAll(n *html.Node, predicates []Predicate) bool {
 	if len(predicates) == 0 {
 		return true
