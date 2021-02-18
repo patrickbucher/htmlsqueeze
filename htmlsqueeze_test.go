@@ -19,11 +19,11 @@ const loremIpsumHTML = `
 			<p class="header">Lorem Ipsum</p>
 			<p class="content">
 				dolor
-				<span class="important">sit</span>
-				<span class="invisible">amet</span>
-				<span class="important">consectetur</span>
+				<span class="important">sit amet</span>
+				<span class="invisible">consectetur</span>
+				<span class="important">adipiscing <br /> elit</span>
 			</p>
-			<p class="footer">adipiscing</p>
+			<p class="footer">nunc</p>
 		</div>
 	</body>
 </html>
@@ -40,9 +40,9 @@ func TestSqueeze(t *testing.T) {
 			ClassMatcher("important"),
 		},
 	}
-	found := Squeeze(doc, predicates, ExtractChildText)
-	if found[0] != "sit" || found[1] != "consectetur" {
-		t.Errorf("expected %v, got %v", []string{"sit", "consectetur"}, found)
+	found := Squeeze(doc, predicates, ExtractChildrenTexts)
+	if found[0] != "sit amet" || found[1] != "adipiscing elit" {
+		t.Errorf("expected %v, got %v", []string{"sit amet", "adipiscing elit"}, found)
 	}
 }
 
