@@ -61,5 +61,5 @@ Or easier using the convenience interface `SqueezeSelector`:
 
 ```go
 doc, _ := html.Parse(strings.NewReader(htmlText))
-found := htmlsqueeze.Squeeze(doc, "div.odd p.yes", htmlsqueeze.ExtractChildText)
+found := htmlsqueeze.SqueezeSelector(doc, "div.odd p.yes", htmlsqueeze.ExtractChildText)
 ```
